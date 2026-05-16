@@ -11,8 +11,9 @@ pipeline {
         stage('2. Docker image Build') {
             steps {
                 sh '''
-                    eval $(minikube docker-env)
-                    docker build --no-cache -t restoran-app:latest ./restoran-proje
+            	    export PATH=$PATH:/usr/local/bin:/usr/bin
+                    eval $(/usr/bin/minikube docker-env)
+                    docker build --no-cache -t restoran-app:latest ./app
                 '''
             }
         }
