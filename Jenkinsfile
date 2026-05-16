@@ -12,7 +12,7 @@ pipeline {
             steps {
                 sh '''
                     eval $(minikube docker-env)
-                    docker build --no-cache -t restoran-app:latest ./app
+                    docker build --no-cache -t restoran-app:latest ./restoran-proje
                 '''
             }
         }
