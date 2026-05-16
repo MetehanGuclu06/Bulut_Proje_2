@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('1. Kodu GitHub dan çek.') {
             steps {
-                git branch: 'main', url: 'https://github.com/kullanicin/repo-adi.git'
+                git branch: 'main', url: 'https://github.com/MetehanGuclu06/Bulut_Proje_2'
             }
         }
 
