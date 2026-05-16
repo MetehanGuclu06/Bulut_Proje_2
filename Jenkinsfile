@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     stages {
-        stage('1. Kodu GitHub dan çek') {
+        stage('1. Kodu GitHub dan çek.') {
             steps {
                 git branch: 'main', url: 'https://github.com/kullanicin/repo-adi.git'
             }
