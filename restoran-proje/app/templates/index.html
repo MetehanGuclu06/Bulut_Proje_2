@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ember & Oak — Fine Dining</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cream: #f5f0e8;
+            --dark: #1a1510;
+            --gold: #c9a84c;
+            --warm: #8b6914;
+            --text: #2d2418;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--dark);
+            color: var(--cream);
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 300;
+            overflow-x: hidden;
+        }
+
+        /* NAV */
+        nav {
+            position: fixed; top: 0; width: 100%; z-index: 100;
+            padding: 2rem 4rem;
+            display: flex; justify-content: space-between; align-items: center;
+            background: linear-gradient(to bottom, rgba(26,21,16,0.95), transparent);
+        }
+        .logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.6rem; font-weight: 300; letter-spacing: 0.15em;
+            color: var(--gold);
+        }
+        .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+        .nav-links a {
+            color: var(--cream); text-decoration: none;
+            font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
+            opacity: 0.8; transition: opacity 0.3s;
+        }
+        .nav-links a:hover { opacity: 1; color: var(--gold); }
+
+        /* HERO */
+        .hero {
+            height: 100vh;
+            background: 
+                linear-gradient(to bottom, rgba(26,21,16,0.3) 0%, rgba(26,21,16,0.7) 60%, var(--dark) 100%),
+                url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1600&q=80') center/cover no-repeat;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center; text-align: center;
+            padding: 2rem;
+        }
+        .hero-eyebrow {
+            font-size: 0.65rem; letter-spacing: 0.4em; text-transform: uppercase;
+            color: var(--gold); margin-bottom: 1.5rem;
+            animation: fadeUp 1s ease both;
+        }
+        .hero h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(3.5rem, 8vw, 7rem);
+            font-weight: 300; line-height: 1.05;
+            animation: fadeUp 1s ease 0.2s both;
+        }
+        .hero h1 em { font-style: italic; color: var(--gold); }
+        .hero-sub {
+            margin-top: 1.5rem; font-size: 0.8rem;
+            letter-spacing: 0.15em; opacity: 0.65;
+            animation: fadeUp 1s ease 0.4s both;
+        }
+        .hero-cta {
+            margin-top: 3rem;
+            animation: fadeUp 1s ease 0.6s both;
+        }
+        .btn-gold {
+            display: inline-block;
+            padding: 1rem 3rem;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            text-decoration: none;
+            font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase;
+            transition: all 0.4s;
+        }
+        .btn-gold:hover {
+            background: var(--gold); color: var(--dark);
+        }
+
+        /* DIVIDER */
+        .divider {
+            display: flex; align-items: center; gap: 1.5rem;
+            padding: 0 4rem; margin: 5rem auto; max-width: 900px;
+        }
+        .divider-line { flex: 1; height: 1px; background: var(--gold); opacity: 0.3; }
+        .divider-icon { color: var(--gold); font-size: 1.2rem; opacity: 0.6; }
+
+        /* ABOUT */
+        .about {
+            max-width: 900px; margin: 0 auto; padding: 0 4rem;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: center;
+        }
+        .about-text h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.8rem; font-weight: 300; line-height: 1.2;
+            margin-bottom: 1.5rem;
+        }
+        .about-text h2 em { color: var(--gold); font-style: italic; }
+        .about-text p { opacity: 0.65; line-height: 1.9; font-size: 0.85rem; }
+        .about-img {
+            aspect-ratio: 3/4;
+            background: url('https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&q=80') center/cover;
+            position: relative;
+        }
+        .about-img::before {
+            content: ''; position: absolute;
+            top: -1rem; left: -1rem; right: 1rem; bottom: 1rem;
+            border: 1px solid var(--gold); opacity: 0.3; z-index: -1;
+        }
+
+        /* MENU PREVIEW */
+        .menu-section {
+            padding: 8rem 4rem; text-align: center;
+        }
+        .section-label {
+            font-size: 0.65rem; letter-spacing: 0.4em; text-transform: uppercase;
+            color: var(--gold); margin-bottom: 1rem;
+        }
+        .section-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 3rem; font-weight: 300;
+        }
+        .menu-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem; margin-top: 4rem; max-width: 1000px; margin-left: auto; margin-right: auto;
+        }
+        .menu-item {
+            padding: 3rem 2rem;
+            border: 1px solid rgba(201,168,76,0.15);
+            transition: border-color 0.4s, background 0.4s;
+        }
+        .menu-item:hover {
+            border-color: rgba(201,168,76,0.5);
+            background: rgba(201,168,76,0.05);
+        }
+        .menu-item-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.4rem; font-weight: 300; margin-bottom: 0.5rem;
+        }
+        .menu-item-desc { font-size: 0.75rem; opacity: 0.5; line-height: 1.7; }
+        .menu-item-price { margin-top: 1rem; color: var(--gold); font-size: 0.8rem; }
+
+        /* CTA SECTION */
+        .cta-section {
+            padding: 10rem 4rem; text-align: center;
+            background: linear-gradient(to bottom, var(--dark), #0f0c08, var(--dark));
+        }
+        .cta-section h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            font-weight: 300; margin-bottom: 2rem;
+        }
+        .cta-section p { opacity: 0.55; margin-bottom: 3rem; font-size: 0.85rem; letter-spacing: 0.05em; }
+
+        /* FOOTER */
+        footer {
+            border-top: 1px solid rgba(201,168,76,0.2);
+            padding: 3rem 4rem;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        footer p { font-size: 0.7rem; opacity: 0.4; letter-spacing: 0.1em; }
+        .footer-logo {
+            font-family: 'Cormorant Garamond', serif;
+            color: var(--gold); font-size: 1.2rem; opacity: 0.7;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            nav { padding: 1.5rem 2rem; }
+            .nav-links { display: none; }
+            .about { grid-template-columns: 1fr; padding: 0 2rem; gap: 3rem; }
+            .menu-grid { grid-template-columns: 1fr; }
+            .menu-section, .cta-section { padding: 5rem 2rem; }
+            footer { flex-direction: column; gap: 1rem; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo">Ember & Oak</div>
+        <ul class="nav-links">
+            <li><a href="#">Menü</a></li>
+            <li><a href="#">Hakkımızda</a></li>
+            <li><a href="/randevu">Rezervasyon</a></li>
+            <li><a href="/admin">Admin</a></li>
+        </ul>
+    </nav>
+
+    <section class="hero">
+        <p class="hero-eyebrow">İstanbul — Boğaz Kıyısı</p>
+        <h1>Lezzetin<br><em>Sanatı</em></h1>
+        <p class="hero-sub">Her tabak, bir hikâye. Her akşam, bir anı.</p>
+        <div class="hero-cta">
+            <a href="/randevu" class="btn-gold">Rezervasyon Yap</a>
+        </div>
+    </section>
+
+    <div class="divider">
+        <div class="divider-line"></div>
+        <div class="divider-icon">◆</div>
+        <div class="divider-line"></div>
+    </div>
+
+    <section class="about">
+        <div class="about-text">
+            <h2>Gelenekten<br>İlham Alan<br><em>Çağdaş Mutfak</em></h2>
+            <p>2010'dan bu yana Anadolu'nun zengin mutfak geleneğini modern tekniklerle harmanlıyoruz. Şefimiz Mehmet Karahan, yerel üreticilerle kurduğu özel ilişkilerle her gün taze, mevsimlik malzemeler seçiyor.</p>
+        </div>
+        <div class="about-img"></div>
+    </section>
+
+    <section class="menu-section">
+        <p class="section-label">Seçkin Lezzetler</p>
+        <h2 class="section-title">Akşam Menüsü</h2>
+        <div class="menu-grid">
+            <div class="menu-item">
+                <div class="menu-item-name">Truffle Risotto</div>
+                <div class="menu-item-desc">Siyah truffle, parmesan, taze kekik</div>
+                <div class="menu-item-price">₺480</div>
+            </div>
+            <div class="menu-item">
+                <div class="menu-item-name">Kuzu Sırtı</div>
+                <div class="menu-item-desc">Sous-vide kuzu, nar sosu, közlenmiş sebze</div>
+                <div class="menu-item-price">₺620</div>
+            </div>
+            <div class="menu-item">
+                <div class="menu-item-name">Levrek Ceviche</div>
+                <div class="menu-item-desc">Taze levrek, yuzu, salatalık</div>
+                <div class="menu-item-price">₺380</div>
+            </div>
+            <div class="menu-item">
+                <div class="menu-item-name">Wagyu Bonfile</div>
+                <div class="menu-item-desc">A5 Wagyu, kemik iliği, truffle</div>
+                <div class="menu-item-price">₺1.200</div>
+            </div>
+            <div class="menu-item">
+                <div class="menu-item-name">Kerevit Bisque</div>
+                <div class="menu-item-desc">Taze kerevit, krema, safran</div>
+                <div class="menu-item-price">₺320</div>
+            </div>
+            <div class="menu-item">
+                <div class="menu-item-name">Çikolata Fondant</div>
+                <div class="menu-item-desc">Bitter çikolata, fıstık ezmesi, dondurma</div>
+                <div class="menu-item-price">₺220</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <h2>Özel Bir Akşam<br>Sizi Bekliyor</h2>
+        <p>Masanızı şimdiden ayırtın, biz gerisini düşünelim.</p>
+        <a href="/randevu" class="btn-gold">Rezervasyon Yap</a>
+    </section>
+
+    <footer>
+        <p>© 2024 Ember & Oak. Tüm hakları saklıdır.</p>
+        <div class="footer-logo">Ember & Oak</div>
+        <p>Beşiktaş, İstanbul · +90 212 555 00 00</p>
+    </footer>
+</body>
+</html>

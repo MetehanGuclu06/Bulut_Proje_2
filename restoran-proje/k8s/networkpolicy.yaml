@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: postgres-network-policy
+  namespace: default
+spec:
+  podSelector:
+    matchLabels:
+      app: postgres          # Bu policy postgres pod'larına uygulanır
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: restoran-app  # Sadece restoran-app pod'ları erişebilir
+    ports:
+    - protocol: TCP
+      port: 5432             # Sadece PostgreSQL portuna

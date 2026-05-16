@@ -1,0 +1,61 @@
+steps:
+  # Adım 1: Docker image'ı build et
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/restoran-app:$COMMIT_SHA'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/restoran-app:latest'
+      - './app'
+    id: 'build-image'
+
+  # Adım 2: Image'ı Google Container Registry'e yükle
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/restoran-app:$COMMIT_SHA'
+    id: 'push-image'
+    waitFor: ['build-image']
+
+  # Adım 3: GKE cluster'a bağlan
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - 'container'
+      - 'clusters'
+      - 'get-credentials'
+      - 'restoran-cluster'
+      - '--region=us-central1'
+      - '--project=$PROJECT_ID'
+    id: 'get-credentials'
+    waitFor: ['push-image']
+
+  # Adım 4: Kubernetes'e yeni image'ı deploy et (Rolling Update)
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args:
+      - 'set'
+      - 'image'
+      - 'deployment/restoran-app'
+      - 'restoran-app=gcr.io/$PROJECT_ID/restoran-app:$COMMIT_SHA'
+    env:
+      - 'CLOUDSDK_COMPUTE_REGION=us-central1'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=restoran-cluster'
+    id: 'deploy'
+    waitFor: ['get-credentials']
+
+  # Adım 5: Deploy durumunu kontrol et
+  - name: 'gcr.io/cloud-builders/kubectl'
+    args:
+      - 'rollout'
+      - 'status'
+      - 'deployment/restoran-app'
+    env:
+      - 'CLOUDSDK_COMPUTE_REGION=us-central1'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=restoran-cluster'
+    waitFor: ['deploy']
+
+images:
+  - 'gcr.io/$PROJECT_ID/restoran-app:$COMMIT_SHA'
+  - 'gcr.io/$PROJECT_ID/restoran-app:latest'
+
+timeout: '600s'

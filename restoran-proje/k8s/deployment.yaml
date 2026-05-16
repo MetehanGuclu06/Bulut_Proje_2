@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: restoran-app
+  labels:
+    app: restoran-app
+spec:
+  replicas: 2                          # Başlangıçta 2 kopya çalışır
+  selector:
+    matchLabels:
+      app: restoran-app
+  strategy:
+    type: RollingUpdate               # Sıfır kesinti ile güncelleme
+    rollingUpdate:
+      maxUnavailable: 1               # Güncelleme sırasında max 1 pod kapalı olabilir
+      maxSurge: 1                     # Güncelleme sırasında max 1 ekstra pod açılır
+  template:
+    metadata:
+      labels:
+        app: restoran-app
+    spec:
+      containers:
+      - name: restoran-app
+        image: restoran-app:latest    # CI/CD ile bu otomatik güncellenir
+        imagePullPolicy: Never        # Minikube için — local image kullan
+        ports:
+        - containerPort: 5000
+        env:
+        - name: DB_HOST
+          value: "postgres-service"
+        - name: DB_NAME
+          value: "restorandb"
+        - name: DB_USER
+          value: "admin"
+        - name: DB_PASSWORD
+          value: "password123"
+        readinessProbe:               # Pod hazır mı kontrolü
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        livenessProbe:                # Pod sağlıklı mı kontrolü
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 15
+          periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: restoran-service
+spec:
+  selector:
+    app: restoran-app
+  ports:
+  - port: 80
+    targetPort: 5000
+  type: NodePort                      # Minikube için NodePort (GKE'de LoadBalancer olur)
